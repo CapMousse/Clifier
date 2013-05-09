@@ -1,12 +1,15 @@
 # Clifier [![Build Status](https://secure.travis-ci.org/CapMousse/Clifier.png?branch=master)](http://travis-ci.org/CapMousse/Clifier)
 
-Create cli utility for node.js easily
+Create cli utility for node.js easily, including:
+ - Full command/argument parser
+ - Consistant arguments : second argument will alway be the second parametter of command callback
+ - Auto help generator
 
 ## Getting Started
 Install the module with: `npm install clifier`
 
 ```javascript
-var Clifier = require('Clifier');
+var Clifier = require('clifier');
 var cli = new Clifier('name', 'version', 'description');
 
 cli.addCommand('testcommand', 'description', function(arg1, arg2){
@@ -19,9 +22,6 @@ cli.addCommand('testcommand', 'description', function(arg1, arg2){
 
 cli.run();
 ```
-
-## Documentation
-_(Coming soon)_
 
 ## Examples
 _(Coming soon)_
