@@ -1,0 +1,44 @@
+{
+  "name": "Clifier",
+  "description": "Create cli utility easily",
+  "version": "0.0.1",
+  "homepage": "https://github.com/CapMousse/clifier",
+  "author": {
+    "name": "Jeremy Barbe",
+    "email": "jeremy@devenezninja.com",
+    "url": "http://www.shwaark.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/CapMousse/clifier.git"
+  },
+  "bugs": {
+    "url": "https://github.com/CapMousse/clifier/issues"
+  },
+  "licenses": [
+    {
+      "type": "WTFPL",
+      "url": "https://github.com/CapMousse/clifier/blob/master/LICENSE"
+    }
+  ],
+  "main": "lib/index.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "grunt nodeunit"
+  },
+  "devDependencies": {
+    "grunt-contrib-jshint": "~0.1.1",
+    "grunt-contrib-nodeunit": "~0.1.2",
+    "grunt-contrib-watch": "~0.2.0",
+    "grunt": "~0.4.1"
+  },
+  "keywords": [
+    "cli", 
+    "command",
+    "command line",
+    "console",
+    "terminal"
+  ]
+}
