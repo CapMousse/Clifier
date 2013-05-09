@@ -1,8 +1,8 @@
 {
-  "name": "Clifier",
+  "name": "clifier",
   "description": "Create cli utility easily",
   "version": "0.0.1",
-  "homepage": "https://github.com/CapMousse/clifier",
+  "homepage": "https://github.com/CapMousse/Clifier",
   "author": {
     "name": "Jeremy Barbe",
     "email": "jeremy@devenezninja.com",
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/CapMousse/clifier.git"
+    "url": "git://github.com/CapMousse/Clifier.git"
   },
   "bugs": {
-    "url": "https://github.com/CapMousse/clifier/issues"
+    "url": "https://github.com/CapMousse/Clifier/issues"
   },
   "licenses": [
     {
       "type": "WTFPL",
-      "url": "https://github.com/CapMousse/clifier/blob/master/LICENSE"
+      "url": "https://github.com/CapMousse/Clifier/blob/master/LICENSE"
     }
   ],
   "main": "lib/index.js",
