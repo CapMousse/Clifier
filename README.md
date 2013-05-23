@@ -11,7 +11,7 @@ Install the module with: `npm install clifier`
 
 ```javascript
 var Clifier = require('clifier');
-var cli = new Clifier('name', 'version', 'description');
+var cli = new Clifier.Cli('name', 'version', 'description');
 
 cli.addCommand('testcommand', 'description', function(arg1, arg2){
         console.log(arg1, arg2);
@@ -32,8 +32,11 @@ To see Clifier in action, you can look at the sources of [SetItUp](https://githu
 
 ## Doc
 
-### 1.Clifer
-- `new Clifier()` : Create a new instance of Clifier
+### 1.Cli
+- `new Clifier.Cli(name, version, description)` : Create a new instance of Clifier
+  - *name* : the name of the cli
+  - *version* : the version of the cli
+  - *decription*: the description of the cli
 
 #### Methods
 - `addCommand(command | name, description, callback)` : Add a command to your CLI
@@ -57,7 +60,10 @@ To see Clifier in action, you can look at the sources of [SetItUp](https://githu
 
 ### 2.Command
 
-- `new Command()` : Create a new command
+- `new Command(name, description, callback)` : Create a new command
+  - *name* : the name of the command
+  - *description* : a description for your command, display in help
+  - *callback*: function called when command launched
 
 #### Methods
 
