@@ -14,7 +14,24 @@ cli.addCommand('trycommand', 'description', function(argTest, argVar){
       return parse === "test" ? true : false;
     });
 
+cli.addCommand('testSimpleTable', 'try table display', function(){
+    cli.displayTable(
+        ['Lorem', 'Ipsum'],
+        [
+            ['Lorem ipsum dolor', 'sit amet est']
+        ]
+    );
+});
 
+cli.addCommand('testComplexTable', 'try table display', function(){
+    cli.displayTable(
+        ['Lorem', 'Ipsum', 'dolor', 'sit', 1],
+        [
+            ['Lorem ipsum dolor', 'sit amet est', 1, 2, 3],
+            ['Lorem ipsum dolor', 1, 2, 3, 'sit amet est']
+        ]
+    );
+});
 
 exports.testClifer = function(test) {
   test.expect(3);
@@ -31,7 +48,7 @@ exports.testCommand = function(test) {
   test.expect(4);
 
   var commands = cli.getCommands();
-  test.equal(Object.keys(commands).length, 1, 'should be 1.');
+  test.equal(Object.keys(commands).length, 3, 'should be 3.');
 
   var command = commands[Object.keys(commands)[0]];
   test.equal(command.getName(), 'trycommand', 'should be trycommand.');
@@ -77,7 +94,7 @@ exports.testRun = function(test) {
   };
   
   cli.run("help");
-  test.equal(log[0], '\ntest v0.0.1\ntest command\n\nUsage : test [command] [options]\n\nCommand list : \n    trycommand [options]      description\n        -t, --test\ttest argument\n        -v, --var\tvar argument\n    help                Show help for test\n');
+  test.equal(log[0], '\ntest v0.0.1\ntest command\n\nUsage : test [command] [options]\n\nCommand list : \n    trycommand [options]      description\n        -t, --test\ttest argument\n        -v, --var\tvar argument\n    testSimpleTable                try table display\n    testComplexTable                try table display\n    help                Show help for test\n');
 
   cli.run("trycommand");
   test.equal(log[1], 'data : undefined, false');
@@ -88,6 +105,26 @@ exports.testRun = function(test) {
   var random = Math.random().toString(16).substring(2);
   cli.run("trycommand",  "-v",  "test", "-t", random);
   test.equal(log[3], 'data : ' + random + ', true');
+
+  console.log = oldConsoleLog;
+  test.done();
+};
+
+exports.testTable = function(test) {
+  test.expect(2);
+
+  var log = [];
+  var oldConsoleLog = console.log;
+
+  console.log = function() {
+      log.push([].slice.call(arguments));
+  };
+
+  cli.run("testSimpleTable");
+  test.equal(log[0], '+-------------------+--------------+\n| Lorem             | Ipsum        |\n+-------------------+--------------+\n| Lorem ipsum dolor | sit amet est |\n+-------------------+--------------+\n');
+
+  cli.run("testComplexTable");
+  test.equal(log[1], '+-------------------+--------------+-------+-----+--------------+\n| Lorem             | Ipsum        | dolor | sit | 1            |\n+-------------------+--------------+-------+-----+--------------+\n| Lorem ipsum dolor | sit amet est | 1     | 2   | 3            |\n| Lorem ipsum dolor | 1            | 2     | 3   | sit amet est |\n+-------------------+--------------+-------+-----+--------------+\n');
 
   console.log = oldConsoleLog;
   test.done();

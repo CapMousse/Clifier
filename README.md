@@ -4,6 +4,7 @@ Create cli utility for node.js easily, including:
  - Full command/argument parser
  - Consistant arguments : second argument will alway be the second parametter of command callback
  - Auto help generator
+ - Table generator
 
 ## Getting Started
 Install the module with: `npm install clifier`
@@ -14,6 +15,8 @@ var cli = new Clifier('name', 'version', 'description');
 
 cli.addCommand('testcommand', 'description', function(arg1, arg2){
         console.log(arg1, arg2);
+
+        cli.displayTable(['header', 1, 2], [['Content', 1, 2]]);
     })
     .addArgument('-a1, --arg1', 'description', 'defaultValue', function(value){
         return "filter value";
@@ -31,6 +34,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 
 ## Release History
 - 05/03/2013 : 0.0.1
+- 23/05/2013 : 0.0.2
 
 ## License
 Copyright (c) 2013 Jeremy Barbe  
