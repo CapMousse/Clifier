@@ -55,7 +55,7 @@ To see Clifier in action, you can look at the sources of [SetItUp](https://githu
 - `run()` : launch the CLI tool
 
 
-### Command
+### 2.Command
 
 - `new Command()` : Create a new command
 
@@ -78,7 +78,7 @@ To see Clifier in action, you can look at the sources of [SetItUp](https://githu
 - `getFunction()` : return the command callback
 
 
-### Argument
+### 3.Argument
 
 - `new Argument(name, description, defaultValue, filter)` : Create a new argument
   - *name* : name of the argument, can be multiple -> `-v, --v, ----version`
@@ -93,12 +93,82 @@ To see Clifier in action, you can look at the sources of [SetItUp](https://githu
 - `getDefaultValue()` : return the argument default value
 - `getFilter()` : return the argument filter function
 
+## Helpers
+
+Clifier provide you some helpers to rapidely show usefull elements to the user
+
+### table
+Display a table
+
+`Clifer.helpers.table(headers, content)`
+
+- *headers* : array of title -> `["title1", "title2"]`
+- *content* : 2d array of data to display -> `[[1, 2], ["mixed", 3], ...]`
+
+**Example :**
+
+```javascript
+Clifier.helpers.table(
+    ['Lorem', 'Ipsum', 'dolor', 'sit', 1],
+    [
+        ['Lorem ipsum dolor', 'sit amet est', 1, 2, 3],
+        ['Lorem ipsum dolor', 1, 2, 3, 'sit amet est']
+    ]
+);
+```
+
+```
++-------------------+--------------+-------+-----+--------------+
+| Lorem             | Ipsum        | dolor | sit | 1            |
++-------------------+--------------+-------+-----+--------------+
+| Lorem ipsum dolor | sit amet est | 1     | 2   | 3            |
+| Lorem ipsum dolor | 1            | 2     | 3   | sit amet est |
++-------------------+--------------+-------+-----+--------------+
+```
+
+### progress
+Display a progess bar on the cli
+
+`new Clifier.helpers.progress(name, total, displayTimer, returnAsString)` :
+
+- *name* : name of the progress bar
+- *total* : maximum of the progres bar
+- *displayTimer* : [true|false] display a timer to the end of the progress bar
+- *returnAsString* : [true|false] return the progress bar as a string
+
+***Return :*** `Progress` object
+
+To update the progress bar, use the tick function
+
+`yourProgress.tick([updateValue])` :
+
+- `updateValue` : value to add to the progress counter | **default to 1**
+
+***Return :*** `String` if returnAsString is true
+
+**Example :**
+
+```javascript
+progress = new Clifier.helpers.progress("test", 10, true);
+progress.tick();
+```
+
+`test 10% [==                  ] 0.0s`
+
+
+```javascript
+progress.tick(80);
+```
+
+`test 90% [==================  ] 0.1s`
+
 ## Contributing
 In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
 
 ## Release History
 - 05/03/2013 : 0.0.1
 - 23/05/2013 : 0.0.2
+- 23/05/2013 : 0.0.3
 
 ## License
 Copyright (c) 2013 Jeremy Barbe  

@@ -3,7 +3,7 @@
 var Clifier = require('../lib/index.js');
 
 //Create test command;
-var cli = new Clifier('test', '0.0.1', 'test command');
+var cli = new Clifier.Cli('test', '0.0.1', 'test command');
 
 //Setut  CLI
 cli.addCommand('trycommand', 'description', function(argTest, argVar){
@@ -14,17 +14,18 @@ cli.addCommand('trycommand', 'description', function(argTest, argVar){
       return parse === "test" ? true : false;
     });
 
-cli.addCommand('testSimpleTable', 'try table display', function(){
-    cli.displayTable(
+var testSimpleTableCommand = new Clifier.Command('testSimpleTable', 'try table display', function(){
+    Clifier.helpers.table(
         ['Lorem', 'Ipsum'],
         [
             ['Lorem ipsum dolor', 'sit amet est']
         ]
     );
 });
+cli.addCommand(testSimpleTableCommand);
 
 cli.addCommand('testComplexTable', 'try table display', function(){
-    cli.displayTable(
+    Clifier.helpers.table(
         ['Lorem', 'Ipsum', 'dolor', 'sit', 1],
         [
             ['Lorem ipsum dolor', 'sit amet est', 1, 2, 3],
@@ -128,4 +129,34 @@ exports.testTable = function(test) {
 
   console.log = oldConsoleLog;
   test.done();
+};
+
+exports.testProgressBar = function(test) {
+  test.expect(4);
+
+  var progress, str;
+
+  try {
+    new Clifier.helpers.progress();
+  } catch(error) {
+    test.throws(error, Error, 'Name required'); 
+  }
+
+  try {
+    new Clifier.helpers.progress("test");
+  } catch(error) {
+    test.throws(error, Error, 'Total required');
+  }
+
+  progress = new Clifier.helpers.progress("test", 10, true, true);
+
+  str = progress.tick();
+  test.equal(str, "test 10% [==                  ] 0.0s");
+
+  setTimeout(function(){
+    str = progress.tick(8);
+    test.equal(str, "test 90% [==================  ] 0.1s");
+
+    test.done();
+  }, 100);
 };
