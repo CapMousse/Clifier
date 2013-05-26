@@ -17,6 +17,7 @@ cli.addCommand('testcommand', 'description', function(arg1, arg2){
         console.log(arg1, arg2);
 
         cli.displayTable(['header', 1, 2], [['Content', 1, 2]]);
+        cli.end();
     })
     .addArgument('-a1, --arg1', 'description', 'defaultValue', function(value){
         return "filter value";
@@ -56,6 +57,7 @@ To see Clifier in action, you can look at the sources of [SetItUp](https://githu
 - `getCommands()` : return an array of `Command`
 - `findCommand(name)` : return the asked command
 - `run()` : launch the CLI tool
+- `end()` : stop the CLI tool
 
 
 ### 2.Command
@@ -102,6 +104,52 @@ To see Clifier in action, you can look at the sources of [SetItUp](https://githu
 ## Helpers
 
 Clifier provide you some helpers to rapidely show usefull elements to the user
+
+### log
+Display a message to user
+
+`Clifer.helpers.log.write(content)`
+- *content* : data to display
+
+`Clifer.helpers.log.style(content, style)`
+- *content* : style the asked content with asked style, if exists
+  - bold
+  - italic
+  - underline
+  - white
+  - blue
+  - green
+  - red
+  - yellow
+
+return `String`
+
+`Clifer.helpers.log.error(content)`
+- *content* : content to display as a red message
+
+`Clifer.helpers.log.warning(content)`
+- *content* : content to display as a yellow message
+
+**Example :**
+
+```javascript
+Clifier.helpers.table(
+    ['Lorem', 'Ipsum', 'dolor', 'sit', 1],
+    [
+        ['Lorem ipsum dolor', 'sit amet est', 1, 2, 3],
+        ['Lorem ipsum dolor', 1, 2, 3, 'sit amet est']
+    ]
+);
+```
+
+```
++-------------------+--------------+-------+-----+--------------+
+| Lorem             | Ipsum        | dolor | sit | 1            |
++-------------------+--------------+-------+-----+--------------+
+| Lorem ipsum dolor | sit amet est | 1     | 2   | 3            |
+| Lorem ipsum dolor | 1            | 2     | 3   | sit amet est |
++-------------------+--------------+-------+-----+--------------+
+```
 
 ### table
 Display a table
@@ -175,6 +223,7 @@ In lieu of a formal styleguide, take care to maintain the existing coding style.
 - 05/03/2013 : 0.0.1
 - 23/05/2013 : 0.0.2
 - 23/05/2013 : 0.0.3
+- 26/05/2013 : 0.0.4
 
 ## License
 Copyright (c) 2013 Jeremy Barbe  
