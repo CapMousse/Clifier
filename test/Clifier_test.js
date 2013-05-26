@@ -7,7 +7,7 @@ var cli = new Clifier.Cli('test', '0.0.1', 'test command');
 
 //Setut  CLI
 cli.addCommand('trycommand', 'description', function(argTest, argVar){
-      console.log('data : ' + argTest + ", " + argVar);
+      Clifier.helpers.log.write('data : ' + argTest + ", " + argVar);
     })
     .addArgument('-t, --test', 'test argument')
     .addArgument('-v, --var', 'var argument', null, function(parse){ 
@@ -24,15 +24,32 @@ var testSimpleTableCommand = new Clifier.Command('testSimpleTable', 'try table d
 });
 cli.addCommand(testSimpleTableCommand);
 
-cli.addCommand('testComplexTable', 'try table display', function(){
-    Clifier.helpers.table(
-        ['Lorem', 'Ipsum', 'dolor', 'sit', 1],
-        [
-            ['Lorem ipsum dolor', 'sit amet est', 1, 2, 3],
-            ['Lorem ipsum dolor', 1, 2, 3, 'sit amet est']
-        ]
-    );
-});
+exports.testLog = function(test) {
+  test.expect(4);
+
+  var log = [];
+  var random;
+  Clifier.helpers.log.write = function(content) {
+    log.push(content);
+  };
+
+  random = Math.random().toString(16).substring(2);
+  Clifier.helpers.log.write(random);
+  test.equal(log[0], random);
+
+  random = Math.random().toString(16).substring(2);
+  Clifier.helpers.log.error(random);
+  test.equal(log[1], '\u001b[1m\u001b[31m'+random+'\u001b[39m\u001b[22m');
+
+  random = Math.random().toString(16).substring(2);
+  Clifier.helpers.log.warning(random);
+  test.equal(log[2], '\u001b[1m\u001b[33m'+random+'\u001b[39m\u001b[22m');
+
+  random = Math.random().toString(16).substring(2);
+  test.equal(Clifier.helpers.log.style(random, 'white'), '\u001b[37m'+random+'\u001b[39m');
+
+  test.done();
+};
 
 exports.testClifer = function(test) {
   test.expect(3);
@@ -49,7 +66,7 @@ exports.testCommand = function(test) {
   test.expect(4);
 
   var commands = cli.getCommands();
-  test.equal(Object.keys(commands).length, 3, 'should be 3.');
+  test.equal(Object.keys(commands).length, 2, 'should be 2.');
 
   var command = commands[Object.keys(commands)[0]];
   test.equal(command.getName(), 'trycommand', 'should be trycommand.');
@@ -87,15 +104,16 @@ exports.testArguments = function(test) {
 exports.testRun = function(test) {
   test.expect(4);
 
+  var oldExit = process.exit;
   var log = [];
-  var oldConsoleLog = console.log;
-
-  console.log = function() {
-      log.push([].slice.call(arguments));
+  Clifier.helpers.log.write = function(content) {
+    log.push(content);
   };
+  process.exit = function(){};
+
   
   cli.run("help");
-  test.equal(log[0], '\ntest v0.0.1\ntest command\n\nUsage : test [command] [options]\n\nCommand list : \n    trycommand [options]      description\n        -t, --test\ttest argument\n        -v, --var\tvar argument\n    testSimpleTable                try table display\n    testComplexTable                try table display\n    help                Show help for test\n');
+  test.equal(log[0], '\ntest v0.0.1\ntest command\n\nUsage : test [command] [options]\n\nCommand list : \n    trycommand [options]      description\n        -t, --test\ttest argument\n        -v, --var\tvar argument\n    testSimpleTable                try table display\n    help                Show help for test\n');
 
   cli.run("trycommand");
   test.equal(log[1], 'data : undefined, false');
@@ -107,7 +125,7 @@ exports.testRun = function(test) {
   cli.run("trycommand",  "-v",  "test", "-t", random);
   test.equal(log[3], 'data : ' + random + ', true');
 
-  console.log = oldConsoleLog;
+  process.exit = oldExit;
   test.done();
 };
 
@@ -115,19 +133,24 @@ exports.testTable = function(test) {
   test.expect(2);
 
   var log = [];
-  var oldConsoleLog = console.log;
-
-  console.log = function() {
-      log.push([].slice.call(arguments));
+  Clifier.helpers.log.write = function(content) {
+    log.push(content);
   };
 
   cli.run("testSimpleTable");
   test.equal(log[0], '+-------------------+--------------+\n| Lorem             | Ipsum        |\n+-------------------+--------------+\n| Lorem ipsum dolor | sit amet est |\n+-------------------+--------------+\n');
 
-  cli.run("testComplexTable");
-  test.equal(log[1], '+-------------------+--------------+-------+-----+--------------+\n| Lorem             | Ipsum        | dolor | sit | 1            |\n+-------------------+--------------+-------+-----+--------------+\n| Lorem ipsum dolor | sit amet est | 1     | 2   | 3            |\n| Lorem ipsum dolor | 1            | 2     | 3   | sit amet est |\n+-------------------+--------------+-------+-----+--------------+\n');
+  
+  var table = Clifier.helpers.table(
+      ['Lorem', 'Ipsum', 'dolor', 'sit', 1],
+      [
+          ['Lorem ipsum dolor', 'sit amet est', 1, 2, 3],
+          ['Lorem ipsum dolor', 1, 2, 3, 'sit amet est']
+      ],
+      true
+  );
+  test.equal(table, '+-------------------+--------------+-------+-----+--------------+\n| Lorem             | Ipsum        | dolor | sit | 1            |\n+-------------------+--------------+-------+-----+--------------+\n| Lorem ipsum dolor | sit amet est | 1     | 2   | 3            |\n| Lorem ipsum dolor | 1            | 2     | 3   | sit amet est |\n+-------------------+--------------+-------+-----+--------------+\n');
 
-  console.log = oldConsoleLog;
   test.done();
 };
 
