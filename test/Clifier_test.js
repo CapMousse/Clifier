@@ -102,7 +102,7 @@ exports.testArguments = function(test) {
 };
 
 exports.testRun = function(test) {
-  test.expect(4);
+  test.expect(5);
 
   var oldExit = process.exit;
   var log = [];
@@ -115,15 +115,18 @@ exports.testRun = function(test) {
   cli.run("help");
   test.equal(log[0], '\ntest v0.0.1\ntest command\n\nUsage : test [command] [options]\n\nCommand list : \n    trycommand [options]      description\n        -t, --test\ttest argument\n        -v, --var\tvar argument\n    testSimpleTable                try table display\n    help                Show help for test\n');
 
+  cli.run("undefined");
+  test.equal(log[1], 'The command undefined doesn\'t exists. Try help to get the list of available commands');
+
   cli.run("trycommand");
-  test.equal(log[1], 'data : undefined, false');
+  test.equal(log[2], 'data : undefined, false');
 
   cli.run("trycommand",  "-v",  "test");
-  test.equal(log[2], 'data : undefined, true');
+  test.equal(log[3], 'data : undefined, true');
 
   var random = Math.random().toString(16).substring(2);
   cli.run("trycommand",  "-v",  "test", "-t", random);
-  test.equal(log[3], 'data : ' + random + ', true');
+  test.equal(log[4], 'data : ' + random + ', true');
 
   process.exit = oldExit;
   test.done();
