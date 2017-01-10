@@ -39,11 +39,11 @@ exports.testLog = function(test) {
 
   random = Math.random().toString(16).substring(2);
   Clifier.Stdout.Text.error(random);
-  test.equal(log[1], '\u001b[1m\u001b[31m'+random+'\u001b[39m\u001b[22m');
+  test.equal(log[1], '\u001b[1m\u001b[31m'+random+'\r\n\u001b[39m\u001b[22m');
 
   random = Math.random().toString(16).substring(2);
   Clifier.Stdout.Text.warning(random);
-  test.equal(log[2], '\u001b[1m\u001b[33m'+random+'\u001b[39m\u001b[22m');
+  test.equal(log[2], '\u001b[1m\u001b[33m'+random+'\r\n\u001b[39m\u001b[22m');
 
   random = Math.random().toString(16).substring(2);
   test.equal(Clifier.Stdout.Text.style(random, 'white'), '\u001b[37m'+random+'\u001b[39m');
