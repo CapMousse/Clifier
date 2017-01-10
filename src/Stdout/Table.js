@@ -1,16 +1,14 @@
-/*
- * Clifier
- * https://github.com/CapMousse/clifier
- *
- * Copyright (c) 2013 Jeremy Barbe
- * Licensed under the WTFPL license.
- */
-
 'use strict';
 
-var log = require('./log.js');
+var Text = require('./Text.js');
 
-module.exports = function(headers, rows, asString){
+/**
+ * Display or create a table
+ * @param  {Array}
+ * @param  {Array}
+ * @param  {Boolean}
+ */
+module.exports = function (headers, rows) {
     if (void(0) === headers || void(0) === rows){
         return; 
     }
@@ -94,9 +92,5 @@ module.exports = function(headers, rows, asString){
 
     output += (output.split("\n").shift()) + "\n";
 
-    if (asString) {
-        return output;
-    } else {
-        log.write(output);
-    }
+    Text.write(output);
 };

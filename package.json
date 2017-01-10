@@ -1,7 +1,7 @@
 {
   "name": "clifier",
   "description": "Create cli utility easily",
-  "version": "0.0.6",
+  "version": "1.0.0",
   "homepage": "https://github.com/CapMousse/Clifier",
   "author": {
     "name": "Jeremy Barbe",
@@ -26,16 +26,13 @@
     "node": ">= 0.8.0"
   },
   "scripts": {
-    "test": "grunt nodeunit"
+    "test": "./node_modules/.bin/nodeunit"
   },
   "devDependencies": {
-    "grunt-contrib-jshint": "~0.1.1",
-    "grunt-contrib-nodeunit": "~0.1.2",
-    "grunt-contrib-watch": "~0.2.0",
-    "grunt": "~0.4.1"
+    "nodeunit": "^0.10.2"
   },
   "keywords": [
-    "cli", 
+    "cli",
     "command",
     "command line",
     "console",
