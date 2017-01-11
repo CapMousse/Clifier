@@ -113,13 +113,13 @@ exports.testRun = function(test) {
 
   
   cli.run("help");
-  test.equal(log[0], '\ntest v0.0.1\ntest command\n\nUsage : test [command] [options]\n\nCommand list : \n    trycommand [options]      description\n        -t, --test\ttest argument\n        -v, --var\tvar argument\n    testSimpleTable                try table display\n    help                Show help for test\n');
+  test.equal(log[0], '\ntest v0.0.1\ntest command\n\nUsage : test [command] [options]\n\nCommand list : \ntrycommand [options]\tdescription\n -t, --test\ttest argument\n -v, --var \tvar argument\ntestSimpleTable          \ttry table display\nhelp          \tShow help for test\n');
 
   cli.run("undefined");
   test.equal(log[1], 'The command undefined doesn\'t exists. Try help to get the list of available commands');
 
   cli.run("trycommand");
-  test.equal(log[2], 'data : undefined, false');
+  test.equal(log[2], 'data : undefined, undefined');
 
   cli.run("trycommand",  "-v",  "test");
   test.equal(log[3], 'data : undefined, true');
