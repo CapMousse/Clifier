@@ -44,14 +44,14 @@ Argument.prototype.parse = function (options) {
         return value;
     }
 
-    // Argument was not called by user, try "default" value and call filter
+    if (void(0) !== value && typeof this.getCallback() === 'function') {
+        value = this.getCallback().call(this, value);
+    }
+
     if (void(0) === value && null !== this.getDefaultValue()) {
         value = this.getDefaultValue();
     }
 
-    if (typeof this.getCallback() === 'function') {
-        value = this.getCallback().call(this, value);
-    }
 
     return value;
 };

@@ -54,6 +54,7 @@ All the code is documented, and the example above use all available API.
 - 23/05/2013 : 0.0.3
 - 26/05/2013 : 0.0.4
 - 10/01/2016 : 1.0.0
+- 11/01/2016 : 1.0.2
 
 ## License
 Copyright (c) 2013 Jeremy Barbe 
