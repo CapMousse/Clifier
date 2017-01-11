@@ -116,11 +116,10 @@ Cli.prototype.orderOptions = function (command, options) {
  * Display help text
  */
 Cli.prototype.displayHelp = function () {
-    var help = "",
-        commands = this.getCommands(),
-        command,
-        args,
-        arg;
+    var help        = "",
+        commands    = this.getCommands(),
+        length      = 0,
+        command, args, arg;
 
     help += "\n" + this.getName();
 
@@ -140,17 +139,19 @@ Cli.prototype.displayHelp = function () {
         command = commands[command];
         args = command.getArguments();
 
-        if (args.length === 0) {
-            help += "    " + command.getName() + '                ' + (command.getDescription() || '');
-        } else {
-            help += "    " + command.getName() + ' [options]      ' + (command.getDescription() || '');
-        }
+        help += command.getName() + (args.length ? ' [options]\t' : '          \t') + (command.getDescription() || '');
         
+        args.filter(function(elem) {
+            if (elem.getName().length > length) {
+                length = elem.getName().length;
+            }
+        });
 
         for (arg in args) {
             arg = args[arg];
 
-            help += "\n        " + arg.getName() + '\t' + (arg.getDescription() || '');
+
+            help += "\n " + arg.getName() + ' '.repeat(length - arg.getName().length) + '\t' + (arg.getDescription() || '');
         }
 
 
