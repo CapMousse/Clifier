@@ -7,7 +7,7 @@ class Progress {
      * @param {Number}
      * @param {Boolean}
      */
-    constructor (name, total, displayTimer) {
+    constructor (name, total, displayTimer, quiet) {
         if (void(0) === name) {
             throw new Error('Name required');
         }
@@ -21,6 +21,7 @@ class Progress {
         this.total = total;
         this.timer = new Date();
         this.displayTimer = displayTimer || false;
+        this.quiet = quiet;
         this.readline = require("readline").createInterface({
             input: process.stdin,
             output: process.stdout
@@ -37,8 +38,6 @@ class Progress {
         } else {
             this.readline.write(null, {ctrl: true, name: 'u'});
         }
-
-        return this;
     }
 
     /**
@@ -74,8 +73,11 @@ class Progress {
             output += (elapsed / 1000).toFixed(1) + "s";
         }
 
-        this.clearLine();
-        this.write(output);
+        if (!this.quiet) {
+            this.clearLine();
+            this.write(output);   
+        }
+        
         return this;
     }
 

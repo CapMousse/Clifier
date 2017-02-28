@@ -2,6 +2,8 @@
 
 class Text {
     constructor () {
+        this._verbose = false;
+        this._quiet = false;
         this._styles = {
             //styles
             'bold'      : ['\u001b[1m',  '\u001b[22m'],
@@ -14,13 +16,14 @@ class Text {
             'green'     : ['\u001b[32m', '\u001b[39m'],
             'red'       : ['\u001b[31m', '\u001b[39m'],
             'yellow'    : ['\u001b[33m', '\u001b[39m']
-        }
+        };
     }
     /**
      * Write content to stdout
      * @param {String} content
      */
     write (content) {
+        if (this._quiet) return;
         process.stdout.write(content);
     }
 
@@ -42,6 +45,7 @@ class Text {
      * @param {String} content
      */
     success (content) {
+        if (this._quiet) return;
         this.write(this.style(this.style(content + "\r\n", "green"), "bold"));
     }
 
@@ -50,6 +54,7 @@ class Text {
      * @param {String} content
      */
     warning (content) {
+        if (this._quiet) return;
         this.write(this.style(this.style(content + "\r\n", "yellow"), "bold"));
     }
 
@@ -58,7 +63,16 @@ class Text {
      * @param {String} content
      */
     error (content) {
-        this.write(this.style(this.style(content + "\r\n", "red"), "bold"));
+        process.stderr.write(this.style(this.style(content + "\r\n", "red"), "bold"));
+    }
+
+    /**
+     * Write log message
+     * @param {String} content
+     */
+    log (content) {
+        if (!this._verbose) return;
+        this.write(content + "\r\n");
     }
 };
 

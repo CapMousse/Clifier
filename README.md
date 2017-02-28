@@ -19,10 +19,10 @@ cli
 
 cli
     .command('testcommand', 'description')
-    .argument('-a1, --arg1', 'description', 'defaultValue', function(value){
+    .argument('-a1, --arg1', 'foo', 'defaultValue', function(value){
         return "filtered value: " + value;
     })
-    .argument('-a2, --arg2', 'desscription');
+    .argument('-a2, --arg2', 'bar')
     .action((arg1, arg2) => {
         cli.success(arg1);
         cli.warning("What is that?");
@@ -50,18 +50,68 @@ cli
 cli.run();
 ```
 
-## Doc
+## API
 
-All the code is documented, and the example above use all available API.
+> **require('clifier')**
 
-## Release History
-- 05/03/2013 : 0.0.1
-- 23/05/2013 : 0.0.2
-- 23/05/2013 : 0.0.3
-- 26/05/2013 : 0.0.4
-- 10/01/2016 : 1.0.0
-- 11/01/2016 : 1.0.2
+return a `Cli` instance.
+
+### Cli API
+
+> **.version(string) : Cli**
+
+Set the version of your cli utility
+
+> **.name(string) : Cli**
+
+Set the name of your cli utility
+
+> **.description(string) : Cli**
+
+Set the description of your cli utility
+
+> **.write(string)**
+
+Write something on the stdout
+
+> **.style(content, style)**
+
+Transform content with asked style. Need to be send to `write`.
+
+> **.success(string)**
+
+Write a success text on the stdout
+
+> **.warning(string)**
+
+Write a warning text on the stdout
+
+> **.error(string)**
+
+Write an error text on the stderr
+
+> **.log(string)**
+
+Write a log text on the stdout if verbose enabled
+
+> **.command(name, description) : Command**
+
+Create a new command with name and description.
+
+### Command API
+
+> **.argument(name, description, defaultValue, filter) : Command**
+
+Add an argument to the command.
+- **name** (string) : name of the argument *(--arg, -arg)*
+- **description** (string) : description of the argument
+- **defaultValue** (mixed) : default value of the argument if empty
+- **filter** (function) : filter function for the argument
+
+> **.action(function) : Command**
+
+Action of the command when executed. Function will receive all arguments in orders as parameters.
 
 ## License
-Copyright (c) 2013 Jeremy Barbe 
-Licensed under the WTFPL license.
+
+See `LICENSE` file

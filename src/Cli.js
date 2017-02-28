@@ -4,10 +4,12 @@ const Command   = require('./Command.js');
 const Text      = require('./Stdout/Text.js');
 const Progress  = require('./Stdout/Progress.js');
 const Table     = require('./Stdout/Table.js');
+const Help      = require('./Stdout/Help.js');
 
 class Cli extends Text {
     constructor() {
         super();
+        
         this._name = "";
         this._version = "";
         this._description = "";
@@ -135,68 +137,21 @@ class Cli extends Text {
 
         return ordered;
     }
-
-    /**
-     * Display help text
-     */
-    displayHelp () {
-        var help        = "",
-            commands    = this.getCommands(),
-            length      = 0,
-            command, args, arg;
-
-        help += "\n" + this.getName();
-
-        if (this.getVersion()) {
-            help += ' v' + this.getVersion();
-        }
-
-        if (this.getDescription()) {
-            help += "\n" + this.getDescription();
-        }
-
-        help += "\n\nUsage : " + this.getName() + " [command] [options]";
-
-        help += "\n\nCommand list : \n";
-
-        for (command in commands) {
-            command = commands[command];
-            args = command.getArguments();
-
-            help += command.getName() + (args.length ? ' [options]\t' : '          \t') + (command.getDescription() || '');
-            
-            args.filter(function(elem) {
-                if (elem.getName().length > length) {
-                    length = elem.getName().length;
-                }
-            });
-
-            for (arg in args) {
-                arg = args[arg];
-
-
-                help += "\n " + arg.getName() + ' '.repeat(length - arg.getName().length) + '\t' + (arg.getDescription() || '');
-            }
-
-
-            help += "\n";
-        }
-
-        this.write(help);
-        this.end()
-    }
-
     /**
      * Launch Cli
      */
     run () {
         var _this = this;
 
-        this.command('help', 'Show help for ' + this.getName()).action(() => {
-            this.displayHelp.call(_this);
+        this.command('help', 'Show help').action(() => {
+            new Help(_this);
+            _this.end();
         });
 
         var args = Object.keys(arguments).length ? Array.prototype.slice.call(arguments) : process.argv.slice(2);
+        
+        args = this.checkVerbose(args);
+        args = this.checkQuiet(args);
 
         if (args.length === 0) {
             args.push('help');
@@ -263,7 +218,34 @@ class Cli extends Text {
      * @param {Boolean}
      */
     progress (name, total, displayTimer) {
-        return new Progress(name, total, displayTimer);
+        return new Progress(name, total, displayTimer, this._quiet);
+    }
+
+    /**
+     * Enable the verbose mode
+     * @param {Array} args
+     */
+    checkVerbose (args) {
+        if (args.indexOf('-v') == -1 && args.indexOf('--verbose') == -1) return args;
+
+        this._verbose = true;
+        if (args.indexOf('-v') != -1) args.splice(args.indexOf('-v'), 1);
+        if (args.indexOf('--verbose') != -1) args.splice(args.indexOf('--verbose'), 1);
+        
+        return args;
+    }
+
+    /**
+     * Enable the quiet mode
+     * @param {Array} args
+     */
+    checkQuiet (args) {
+        if (args.indexOf('--quiet') === -1) return args;
+
+        this._quiet = true;
+        args.splice(args.indexOf('--quiet'), 1);
+        
+        return args;
     }
 }
 

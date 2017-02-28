@@ -54,7 +54,7 @@ class Command extends Text {
             return this.getAction().apply(this, args);
         }
 
-        this.write('The command ' + this.getName() + ' doesn\'t have a valid function callback.');
+        this.error('The command ' + this.getName() + ' doesn\'t have a valid function callback.');
     }
 
     /**
