@@ -1,222 +1,270 @@
 'use strict';
 
-var Command = require('./Command.js');
-var Text    = require('./Stdout/Text.js');
+const Command   = require('./Command.js');
+const Text      = require('./Stdout/Text.js');
+const Progress  = require('./Stdout/Progress.js');
+const Table     = require('./Stdout/Table.js');
 
-/**
- * Create a new Cli
- * @param {String} name
- * @param {String} version
- * @param {String} description
- */
-function Cli(name, version, description) {
-    this._name = name;
-    this._version = version;
-    this._description = description;
-    this._commands = {};
-
-    return this;
-}
-
-/**
- * @param  {String}   name
- * @param  {String}   description
- * @param  {Function} callback
- * @return {Command}
- */
-Cli.prototype.addCommand = function (name, description, callback) {
-    var command;
-
-    if ("Command" === name.constructor.name){
-        command = name;
-    } else {
-        command = new Command(name, description, callback);
+class Cli extends Text {
+    constructor() {
+        super();
+        this._name = "";
+        this._version = "";
+        this._description = "";
+        this._commands = {};
+        this._defaultCommand = null;
     }
 
-    this._commands[command.getName()] = command;
-
-    return command;
-};
-
-/**
- * Find a command
- * @param  {String} name
- * @return {Command}
- */
-Cli.prototype.findCommand = function (name) {
-    if (void(0) !== this._commands[name]) {
-        return this._commands[name];
+    /**
+     * @param {String} name
+     * @return {Cli}
+     */
+    name (name) {
+        this._name = name;
+        return this;
     }
 
-    Text.write('The command ' + name + ' doesn\'t exists. Try help to get the list of available commands');
-    return;
-};
+    /**
+     * @param {String} version
+     * @return {Cli}
+     */
+    version (version) {
+        this._version = version;
+        return this;
+    }
 
-/**
- * Parse cli command
- * @param  {String} args
- * @return {Object}
- */
-Cli.prototype.parseCommand = function (args) {
-    var command = args.shift(),
-        options = [],
-        len = args.length,
-        i = 0,
-        arg,
-        option;
+    /**
+     * @param {String} description
+     * @return {Cli}
+     */
+    description (description) {
+        this._description = description;
+        return this;
+    }
 
-    for (; i < len; i++) {
-        arg = args[i];
+    /**
+     * @param  {String}   name
+     * @param  {String}   description
+     * @return {Command}
+     */
+    command (name, description) {
+        var command;
 
-        if (/^[\-]{1,2}(.*)$/.test(arg)){
-            if (void(0) !== option) {
-                options.push([option]);             
-            }
-
-            option = arg;
-            continue;
-        } 
-
-        if (void(0) !== option && void(0) !== arg) {
-            options.push([option, arg]);
-            option = void(0);
+        if ("Command" === name.constructor.name){
+            command = name;
+        } else {
+            command = new Command(name, description);
         }
+
+        this._commands[command.getName()] = command;
+
+        return command;
     }
 
-    if (option) {
-        options.push([option]);
+    /**
+     * Find a command
+     * @param  {String} name
+     * @return {Command}
+     */
+    findCommand (name) {
+        if (void(0) !== this._commands[name]) {
+            return this._commands[name];
+        }
+
+        this.write('The command ' + name + ' doesn\'t exists. Try help to get the list of available commands');
+        return;
     }
 
-    return {
-        command: this.findCommand(command), 
-        options: options
-    };
-};
 
-/**
- * Order option by alphabetical order
- * @param  {Array}
- * @param  {Object}
- * @return {Array}
- */
-Cli.prototype.orderOptions = function (command, options) {
-    var ordered = [],
-        args = command ? command.getArguments() : [],
-        len = args.length,
-        i = 0;
+    /**
+     * Parse cli command
+     * @param  {String} args
+     * @return {Object}
+     */
+    parseCommand (args) {
+        var command = args.shift(),
+            options = [],
+            len = args.length,
+            i = 0,
+            arg,
+            option;
 
-    for (; i < len; i++) {
-        ordered.push(args[i].parse(options));
-    }
+        for (; i < len; i++) {
+            arg = args[i];
 
-    return ordered;
-};
+            if (/^[\-]{1,2}(.*)$/.test(arg)){
+                if (void(0) !== option) {
+                    options.push([option]);             
+                }
 
-/**
- * Display help text
- */
-Cli.prototype.displayHelp = function () {
-    var help        = "",
-        commands    = this.getCommands(),
-        length      = 0,
-        command, args, arg;
+                option = arg;
+                continue;
+            } 
 
-    help += "\n" + this.getName();
-
-    if (this.getVersion()) {
-        help += ' v' + this.getVersion();
-    }
-
-    if (this.getDescription()) {
-        help += "\n" + this.getDescription();
-    }
-
-    help += "\n\nUsage : " + this.getName() + " [command] [options]";
-
-    help += "\n\nCommand list : \n";
-
-    for (command in commands) {
-        command = commands[command];
-        args = command.getArguments();
-
-        help += command.getName() + (args.length ? ' [options]\t' : '          \t') + (command.getDescription() || '');
-        
-        args.filter(function(elem) {
-            if (elem.getName().length > length) {
-                length = elem.getName().length;
+            if (void(0) !== option && void(0) !== arg) {
+                options.push([option, arg]);
+                option = void(0);
             }
+        }
+
+        if (option) {
+            options.push([option]);
+        }
+
+        return {
+            command: this.findCommand(command), 
+            options: options
+        };
+    }
+
+    /**
+     * Order option by alphabetical order
+     * @param  {Array}
+     * @param  {Object}
+     * @return {Array}
+     */
+    orderOptions (command, options) {
+        var ordered = [],
+            args = command ? command.getArguments() : [],
+            len = args.length,
+            i = 0;
+
+        for (; i < len; i++) {
+            ordered.push(args[i].parse(options));
+        }
+
+        return ordered;
+    }
+
+    /**
+     * Display help text
+     */
+    displayHelp () {
+        var help        = "",
+            commands    = this.getCommands(),
+            length      = 0,
+            command, args, arg;
+
+        help += "\n" + this.getName();
+
+        if (this.getVersion()) {
+            help += ' v' + this.getVersion();
+        }
+
+        if (this.getDescription()) {
+            help += "\n" + this.getDescription();
+        }
+
+        help += "\n\nUsage : " + this.getName() + " [command] [options]";
+
+        help += "\n\nCommand list : \n";
+
+        for (command in commands) {
+            command = commands[command];
+            args = command.getArguments();
+
+            help += command.getName() + (args.length ? ' [options]\t' : '          \t') + (command.getDescription() || '');
+            
+            args.filter(function(elem) {
+                if (elem.getName().length > length) {
+                    length = elem.getName().length;
+                }
+            });
+
+            for (arg in args) {
+                arg = args[arg];
+
+
+                help += "\n " + arg.getName() + ' '.repeat(length - arg.getName().length) + '\t' + (arg.getDescription() || '');
+            }
+
+
+            help += "\n";
+        }
+
+        this.write(help);
+        this.end()
+    }
+
+    /**
+     * Launch Cli
+     */
+    run () {
+        var _this = this;
+
+        this.command('help', 'Show help for ' + this.getName()).action(() => {
+            this.displayHelp.call(_this);
         });
 
-        for (arg in args) {
-            arg = args[arg];
+        var args = Object.keys(arguments).length ? Array.prototype.slice.call(arguments) : process.argv.slice(2);
 
-
-            help += "\n " + arg.getName() + ' '.repeat(length - arg.getName().length) + '\t' + (arg.getDescription() || '');
+        if (args.length === 0) {
+            args.push('help');
         }
 
+        var parsed = this.parseCommand(args);
+        var parsedArgs = this.orderOptions(parsed.command, parsed.options);
 
-        help += "\n";
+        parsed.command ? parsed.command.runCommand(parsedArgs) : this.end();
     }
 
-    Text.write(help);
-    this.end()
-};
-
-/**
- * Launch Cli
- */
-Cli.prototype.run = function () {
-    var _this = this;
-
-    this.addCommand('help', 'Show help for ' + this.getName(), () => {
-        this.displayHelp.call(_this);
-    });
-
-    var args = Object.keys(arguments).length ? Array.prototype.slice.call(arguments) : process.argv.slice(2);
-
-    if (args.length === 0) {
-        args.push('help');
+    /**
+     * Stop Cli
+     */
+    end () {
+        process.exit();
     }
 
-    var parsed = this.parseCommand(args);
-    var parsedArgs = this.orderOptions(parsed.command, parsed.options);
+    /**
+     * Get Cli name
+     */
+    getName () {
+        return this._name;
+    }
 
-    parsed.command ? parsed.command.runCommand(parsedArgs) : this.end();
-};
+    /**
+     * Get Cli version
+     */
+    getVersion () {
+        return this._version || false;
+    }
 
-/**
- * Stop Cli
- */
-Cli.prototype.end = () => {
-    process.exit();
-};
+    /**
+     * Get Cli description
+     */
+    getDescription () {
+        return this._description || false;
+    }
 
-/**
- * Get Cli name
- */
-Cli.prototype.getName = function () {
-    return this._name;
-};
+    /**
+     * Get Cli commands
+     */
+    getCommands () {
+        return this._commands;
+    }
 
-/**
- * Get Cli version
- */
-Cli.prototype.getVersion = function () {
-    return this._version || false;
-};
+    /**
+     * Display or create a table
+     * @param  {Array}
+     * @param  {Array}
+     * @param  {Boolean}
+     */
+    table (headers, rows) {
+        var table = new Table(headers, rows);
+        this.write(table.getOutput());
+        
+        return this;
+    }
 
-/**
- * Get Cli description
- */
-Cli.prototype.getDescription = function () {
-    return this._description || false;
-};
-
-/**
- * Get Cli commands
- */
-Cli.prototype.getCommands = function () {
-    return this._commands;
-};
+    /**
+     * Create a new progress bar
+     * @param {String}
+     * @param {Number}
+     * @param {Boolean}
+     */
+    progress (name, total, displayTimer) {
+        return new Progress(name, total, displayTimer);
+    }
+}
 
 module.exports = Cli;

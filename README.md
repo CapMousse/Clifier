@@ -10,19 +10,29 @@ Create cli utility for node.js easily, including:
 Install the module with: `npm install clifier`
 
 ```javascript
-var Clifier = require('../src/index');
-var cli = new Clifier.Cli('name', 'version', 'description');
+var cli = require('clifier');
 
-cli.addCommand('testcommand', 'description', function (arg1, arg2) {
-        Clifier.Stdout.Text.success(arg1);
-        Clifier.Stdout.Text.warning("What is that?");
-        Clifier.Stdout.Text.error(arg2);
+cli
+    .name('testcommand')
+    .version('0.0.1')
+    .description('Hello command !');
 
-        new Clifier.Stdout.Table(['header', 1, 2], [['Content', 1, 2]]);
+cli
+    .command('testcommand', 'description')
+    .argument('-a1, --arg1', 'description', 'defaultValue', function(value){
+        return "filtered value: " + value;
+    })
+    .argument('-a2, --arg2', 'desscription');
+    .action((arg1, arg2) => {
+        cli.success(arg1);
+        cli.warning("What is that?");
+        cli.error(arg2);
 
-        var progress = new Clifier.Stdout.Progress("Installing something", 100),
-            i        = 0;
-        var interval = function () {
+        cli.table(['header', 1, 2], [['Content', 1, 2]]);
+
+        var progress = cli.progress("Installing something", 100),
+            i        = 0,
+            interval = function () {
                 i++;
                 progress.tick(1);
 
@@ -35,11 +45,7 @@ cli.addCommand('testcommand', 'description', function (arg1, arg2) {
             }
 
         interval();
-    })
-    .addArgument('-a1, --arg1', 'description', 'defaultValue', function(value){
-        return "filtered value: " + value;
-    })
-    .addArgument('-a2, --arg2', 'desscription');
+    });
 
 cli.run();
 ```

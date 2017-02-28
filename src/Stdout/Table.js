@@ -1,96 +1,118 @@
 'use strict';
 
-var Text = require('./Text.js');
-
-/**
- * Display or create a table
- * @param  {Array}
- * @param  {Array}
- * @param  {Boolean}
- */
-module.exports = function (headers, rows) {
-    if (void(0) === headers || void(0) === rows){
-        return; 
-    }
-
-    var output = "";
-    var colLength = headers.length;
-    var rowLength = rows.length;
-    var i = 0;
-    var j = 0;
-    var colsWidth = [];
-    var str;
-
-    for (; i < colLength; i++) {
-        for(j = 0 ; j < rowLength; j++) {
-            str = rows[j][i].toString().length;
-
-            if (void(0) === colsWidth[i]) {
-                colsWidth[i] = str;
-                continue;
-            }
-
-            if (colsWidth[i] < str) {
-                colsWidth[i] = str; 
-            }
+class Table {
+    /**
+     * Display a table
+     * @param  {Array}
+     * @param  {Array}
+     * @param  {Boolean}
+     */
+    constructor (headers, rows) {
+        if (void(0) === headers || void(0) === rows) {
+            throw new Error("Headers or rows can't be empty");
         }
 
-        if (colsWidth[i] < headers[i].toString().length) {
-            colsWidth[i] = headers[i].toString().length; 
-        }
+        this._headers   = headers;
+        this._rows      = rows;
+        this._output    = "";
+        this._colLength  = headers.length;
+        this._rowLength  = rows.length;
+        this._colsWidth  = [];
+
+        this.getColsWidth();
+        this.setHeader();
+        this.setBody();
     }
 
+    getColsWidth () {
+        var i = 0,
+            j = 0,
+            str;
 
-    //setup header
-    for (i = 0; i < 3; i++ ) {
-        output += (1 !== i)  ? "+-" : "|";
+        for (; i < this._colLength; i++) {
+            for(j = 0 ; j < this._rowLength; j++) {
+                str = this._rows[j][i].toString().length;
 
-        for (j = 0; j < colLength; j++){
-            if (1 !== i) {
-                if (0 !== j) {
-                    output += "-";
+                if (void(0) === this._colsWidth[i]) {
+                    this._colsWidth[i] = str;
+                    continue;
                 }
 
-                output += '-'.repeat(colsWidth[j]) + "-+";
-                continue;
-            } else {
-                output += ' ';
+                if (this._colsWidth[i] < str) {
+                    this._colsWidth[i] = str; 
+                }
             }
 
-            output += headers[j];
-            str = headers[j].toString();
-
-            if (colsWidth[j] > str.length) {
-                output += ' '.repeat(colsWidth[j]-str.length);
-            }
-
-            output += (1 !== i)  ? "-+-" : " |";
-        }
-
-        output += "\n";
-    }
-
-    //setup body
-    for (i = 0; i < rowLength; i++ ) {
-        output += "| ";
-
-        for (j = 0; j < colLength; j++){
-            output += rows[i][j];
-            str = rows[i][j].toString();
-
-            if (colsWidth[j] > str.length) {
-                output += ' '.repeat(colsWidth[j]-str.length);
-            }
-
-            if (j < colLength-1) {
-                output += " | ";
+            if (this._colsWidth[i] < this._headers[i].toString().length) {
+                this._colsWidth[i] = this._headers[i].toString().length; 
             }
         }
-
-        output += " |\n";
     }
 
-    output += (output.split("\n").shift()) + "\n";
+    setHeader () {
+        var str;
 
-    Text.write(output);
-};
+        for (var i = 0; i < 3; i++ ) {
+            this._output += (1 !== i)  ? "+-" : "|";
+
+            for (var j = 0; j < this._colLength; j++){
+                if (1 !== i) {
+                    if (0 !== j) {
+                        this._output += "-";
+                    }
+
+                    this._output += '-'.repeat(this._colsWidth[j]) + "-+";
+                    continue;
+                } else {
+                    this._output += ' ';
+                }
+
+                this._output += this._headers[j].toString();
+                str = this._headers[j].toString();
+
+                if (this._colsWidth[j] > str.length) {
+                    this._output += ' '.repeat(this._colsWidth[j]-str.length);
+                }
+
+                this._output += (1 !== i)  ? "-+-" : " |";
+            }
+
+            this._output += "\n";
+        }
+    }
+
+    setBody () {
+        var str;
+
+        //setup body
+        for (var i = 0; i < this._rowLength; i++ ) {
+            this._output += "| ";
+
+            for (var j = 0; j < this._colLength; j++){
+                this._output += this._rows[i][j];
+                str = this._rows[i][j].toString();
+
+                if (this._colsWidth[j] > str.length) {
+                    this._output += ' '.repeat(this._colsWidth[j]-str.length);
+                }
+
+                if (j < this._colLength-1) {
+                    this._output += " | ";
+                }
+            }
+
+            this._output += " |\n";
+        }
+
+        this._output += (this._output.split("\n").shift()) + "\n";
+    }
+
+    /**
+     * @return {String}
+     */
+    getOutput () {
+        return this._output;
+    }
+}
+
+module.exports = Table;
