@@ -52,55 +52,55 @@ cli.run();
 
 ## API
 
-> **require('clifier')**
+#### `require('clifier')`
 
 return a `Cli` instance.
 
 ### Cli API
 
-> **.version(string) : Cli**
+#### `.version(string) : Cli`
 
 Set the version of your cli utility
 
-> **.name(string) : Cli**
+#### `.name(string) : Cli`
 
 Set the name of your cli utility
 
-> **.description(string) : Cli**
+#### `.description(string) : Cli`
 
 Set the description of your cli utility
 
-> **.write(string)**
+#### `.write(string)`
 
 Write something on the stdout
 
-> **.style(content, style)**
+#### `.style(content, style)`
 
 Transform content with asked style. Need to be send to `write`.
 
-> **.success(string)**
+#### `.success(string)`
 
 Write a success text on the stdout
 
-> **.warning(string)**
+#### `.warning(string)`
 
 Write a warning text on the stdout
 
-> **.error(string)**
+#### `.error(string)`
 
 Write an error text on the stderr
 
-> **.log(string)**
+#### `.log(string)`
 
 Write a log text on the stdout if verbose enabled
 
-> **.command(name, description) : Command**
+#### `.command(name, description) : Command`
 
 Create a new command with name and description.
 
 ### Command API
 
-> **.argument(name, description, defaultValue, filter) : Command**
+#### `.argument(name, description, defaultValue, filter) : Command`
 
 Add an argument to the command.
 - **name** (string) : name of the argument *(--arg, -arg)*
@@ -108,7 +108,7 @@ Add an argument to the command.
 - **defaultValue** (mixed) : default value of the argument if empty
 - **filter** (function) : filter function for the argument
 
-> **.action(function) : Command**
+#### `.action(function) : Command`
 
 Action of the command when executed. Function will receive all arguments in orders as parameters.
 

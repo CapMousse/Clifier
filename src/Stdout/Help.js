@@ -9,7 +9,7 @@ class Help extends Text {
      */
     constructor (cli) {
         super();
-
+        
         this._cli = cli;
         this._output = "\n";
         this._length = 0;
@@ -17,10 +17,11 @@ class Help extends Text {
         this.setIntro();
         this.setCommands();
         this.setOptions();
-
-        this.write(this._output);
     }
-
+ 
+    /**
+     * Get help intro
+     */
     setIntro () {
         this._output += this._cli.getName();
 
@@ -38,6 +39,9 @@ class Help extends Text {
         this._output += this.style(" [options]", "blue");
     }
 
+    /**
+     * Get command preformated
+     */
     getCommands () {
         var parsedCommands = [],
             commands = this._cli.getCommands();
@@ -73,6 +77,9 @@ class Help extends Text {
         return parsedCommands;
     }
 
+    /**
+     * Get command list
+     */
     setCommands () {
         var commands = this.getCommands();
 
@@ -87,13 +94,22 @@ class Help extends Text {
         });
     }
 
+    /**
+     * Get option list
+     */
     setOptions () {
-
         this._output += "\n" + this.style("OPTIONS :", "bold") + " \n\n";
         this._output += " " + this.style("--quiet", "green") + ' '.repeat(this._length - 8) + "\tQuiet node\n";
         this._output += " " + this.style("-v, --verbose", "green") + ' '.repeat(this._length - 14) + "\tVerbose node\n";
 
         this._output += "\n";
+    }
+    
+    /**
+     * Get help output
+     */
+    getHelp () {
+        return this._output;
     }
 }
 

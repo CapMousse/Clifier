@@ -50,14 +50,9 @@ class Cli extends Text {
      * @return {Command}
      */
     command (name, description) {
-        var command;
+        if (name == "help") throw new Error("help is a reserved command");
 
-        if ("Command" === name.constructor.name){
-            command = name;
-        } else {
-            command = new Command(name, description);
-        }
-
+        let command = new Command(name, description);
         this._commands[command.getName()] = command;
 
         return command;
@@ -141,11 +136,15 @@ class Cli extends Text {
      * Launch Cli
      */
     run () {
-        var _this = this;
+        let helpCmd = new Command("help", "Show help");
 
-        this.command('help', 'Show help').action(() => {
-            new Help(_this);
-            _this.end();
+        this._commands[helpCmd.getName()] = helpCmd;
+
+        helpCmd.action(_ => {
+            let help = new Help(this);
+            
+            this.write(help.getHelp());
+            this.end();
         });
 
         var args = Object.keys(arguments).length ? Array.prototype.slice.call(arguments) : process.argv.slice(2);

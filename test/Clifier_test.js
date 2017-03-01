@@ -9,7 +9,7 @@ cli
   
 cli.command('trycommand', 'description')
     .argument('-t, --test', 'test argument')
-    .argument('-v, --var', 'var argument', null, function(parse){ 
+    .argument('-j, --jar', 'var argument', null, function(parse){ 
       return parse === "test" ? true : false;
     })
   .action(function(argTest, argVar){
@@ -26,8 +26,18 @@ cli.command('testSimpleTable', 'try table display')
     );
   });
 
+exports.testInvalidArgument = function (test) {
+  test.expect(1);
+
+  test.throws(() => {
+    cli.command('test').argument('-v');
+  }, Error, "-v is a reserved argument");
+
+  test.done();
+}
+
 exports.testLog = function(test) {
-  test.expect(4);
+  test.expect(2);
 
   var log = [];
   var random;
@@ -38,14 +48,6 @@ exports.testLog = function(test) {
   random = Math.random().toString(16).substring(2);
   cli.write(random);
   test.equal(log[0], random);
-
-  random = Math.random().toString(16).substring(2);
-  cli.error(random);
-  test.equal(log[1], '\u001b[1m\u001b[31m'+random+'\r\n\u001b[39m\u001b[22m');
-
-  random = Math.random().toString(16).substring(2);
-  cli.warning(random);
-  test.equal(log[2], '\u001b[1m\u001b[33m'+random+'\r\n\u001b[39m\u001b[22m');
 
   random = Math.random().toString(16).substring(2);
   test.equal(cli.style(random, 'white'), '\u001b[37m'+random+'\u001b[39m');
@@ -65,10 +67,14 @@ exports.testClifer = function(test) {
 };
 
 exports.testCommand = function(test) {
-  test.expect(4);
+  test.expect(5);
+
+  test.throws(_ => {
+    cli.command("help");
+  }, Error, "help is a reserved command");
 
   var commands = cli.getCommands();
-  test.equal(Object.keys(commands).length, 2, 'should be 2.');
+  test.equal(Object.keys(commands).length, 3, 'should be 3.');
 
   var command = commands[Object.keys(commands)[0]];
   test.equal(command.getName(), 'trycommand', 'should be trycommand.');
@@ -94,7 +100,7 @@ exports.testArguments = function(test) {
   test.equal(firstArg.getFilter(), void(0), "Should be undefined");
 
   var secondArg = args[Object.keys(args)[1]];
-  test.equal(secondArg.getName(), "-v, --var", "Should be var");
+  test.equal(secondArg.getName(), "-j, --jar", "Should be var");
   test.equal(secondArg.getDescription(), "var argument", "Should be var argument");
   test.equal(secondArg.getDefaultValue(), null, "Should be null");
   test.notEqual(secondArg.getFilter(), void(0), "Should be defined");
@@ -115,7 +121,7 @@ exports.testRun = function(test) {
 
   
   cli.run("help");
-  test.equal(log[0], '\ntest v0.0.1\ntest command\n\nUsage : test [command] [options]\n\nCommand list : \ntrycommand [options]\tdescription\n -t, --test\ttest argument\n -v, --var \tvar argument\ntestSimpleTable          \ttry table display\nhelp          \tShow help for test\n');
+  test.equal(log[0], '\ntest v0.0.1\ntest command\n\n\u001b[1mUSAGE : \u001b[22m\n\n test\u001b[33m [command]\u001b[39m\u001b[34m [options]\u001b[39m\n\n\u001b[1mCOMMANDS :\u001b[22m \n\n \u001b[33mtrycommand\u001b[39m \u001b[34m-t\u001b[39m \u001b[34m-j\u001b[39m\tdescription\n  \u001b[34m-t\u001b[39m            \ttest argument\n  \u001b[34m-j\u001b[39m            \tvar argument\n \u001b[33mtestSimpleTable\u001b[39m \ttry table display\n \u001b[33mtest\u001b[39m            \tfalse\n \u001b[33mhelp\u001b[39m            \tShow help\n\n\u001b[1mOPTIONS :\u001b[22m \n\n \u001b[32m--quiet\u001b[39m        \tQuiet node\n \u001b[32m-v, --verbose\u001b[39m  \tVerbose node\n\n');
 
   cli.run("undefined");
   test.equal(log[1], 'The command undefined doesn\'t exists. Try help to get the list of available commands');
@@ -123,11 +129,11 @@ exports.testRun = function(test) {
   cli.run("trycommand");
   test.equal(log[2], 'data : undefined, undefined');
 
-  cli.run("trycommand",  "-v",  "test");
+  cli.run("trycommand",  "-j",  "test");
   test.equal(log[3], 'data : undefined, true');
 
   var random = Math.random().toString(16).substring(2);
-  cli.run("trycommand",  "-v",  "test", "-t", random);
+  cli.run("trycommand",  "-j",  "test", "-t", random);
   test.equal(log[4], 'data : ' + random + ', true');
 
   process.exit = oldExit;

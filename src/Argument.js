@@ -8,10 +8,27 @@ class Argument {
      * @param {Function} filter       argument callback when called       
      */
     constructor (name, description, defaultValue, filter) {
+        this.checkNameValidity(name);
+
         this._name = name;
         this._description = description;
         this._defaultValue = defaultValue;
         this._filter = filter;
+    }
+
+
+    /**
+     * Check if argument name is valid
+     * @param {String} name
+     */
+    checkNameValidity (name) {
+        const invalid = ['--quiet', '--verbose', '-v'];
+
+        let nameArray = name.split(',');
+
+        for (let i of nameArray) {
+            if (invalid.indexOf(i) != -1) throw new Error(i + " is a reserved argument");
+        }
     }
 
     /**
