@@ -27,7 +27,9 @@ class Argument {
         let nameArray = name.split(',');
 
         for (let i of nameArray) {
-            if (invalid.indexOf(i) != -1) throw new Error(i + " is a reserved argument");
+            if (invalid.indexOf(i) !== -1) {
+                throw new Error(i + " is a reserved argument");
+            }
         }
     }
 
@@ -44,14 +46,14 @@ class Argument {
 
         for (; i < len; i++) {
             name = options[i][0];
-            value = options[i][1] || void(0);
+            value = options[i][1] || undefined;
 
             if (arg.indexOf(name) === -1) {
-                value = void(0);
+                value = undefined;
                 continue;
             }
 
-            if (void(0) === value && null !== this.getDefaultValue()) {
+            if (undefined === value && null !== this.getDefaultValue()) {
                 value = this.getDefaultValue();
             }
 
@@ -62,11 +64,11 @@ class Argument {
             return value;
         }
 
-        if (void(0) !== value && typeof this.getFilter() === 'function') {
+        if (undefined !== value && typeof this.getFilter() === 'function') {
             value = this.getFilter().call(this, value);
         }
 
-        if (void(0) === value && null !== this.getDefaultValue()) {
+        if (undefined === value && null !== this.getDefaultValue()) {
             value = this.getDefaultValue();
         }
 

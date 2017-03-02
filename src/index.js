@@ -2,7 +2,7 @@
 
 /**
  * Repeat a string
- * @param  {Number}
+ * @param  {Number} count
  * @return {String}
  */
 String.prototype.repeat = function (count) {

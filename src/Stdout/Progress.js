@@ -3,16 +3,17 @@
 class Progress {
     /**
      * Create a new progress bar
-     * @param {String}
-     * @param {Number}
-     * @param {Boolean}
+     * @param {String}  name
+     * @param {Number}  total
+     * @param {Boolean} displayTimer
+     * @param {Boolean} quiet
      */
     constructor (name, total, displayTimer, quiet) {
-        if (void(0) === name) {
+        if (undefined === name) {
             throw new Error('Name required');
         }
 
-        if (void(0) === total) {
+        if (undefined === total) {
             throw new Error('Total required');
         }
 
@@ -51,12 +52,12 @@ class Progress {
 
     /**
      * Update progress bar
-     * @param  {Number}
+     * @param  {Number} len
      */
     tick (len) {
         var percent, elapsed, width, empty, output;
 
-        if (void(0) === len) {
+        if (undefined === len) {
             len = 1;
         }
 

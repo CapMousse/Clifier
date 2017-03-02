@@ -23,7 +23,10 @@ class Text {
      * @param {String} content
      */
     write (content) {
-        if (this._quiet) return;
+        if (this._quiet) {
+            return;
+        }
+
         process.stdout.write(content);
     }
 
@@ -33,7 +36,7 @@ class Text {
      * @param {String} style
      */
     style (content, style) {
-        if (void(0) === this._styles[style]) {
+        if (undefined === this._styles[style]) {
             throw new Error('Style '+style+' doesn\'t exists');
         }
 
@@ -45,7 +48,10 @@ class Text {
      * @param {String} content
      */
     success (content) {
-        if (this._quiet) return;
+        if (this._quiet) {
+            return;
+        }
+        
         this.write(this.style(this.style(content + "\r\n", "green"), "bold"));
     }
 
@@ -54,7 +60,10 @@ class Text {
      * @param {String} content
      */
     warning (content) {
-        if (this._quiet) return;
+        if (this._quiet) {
+            return;
+        }
+        
         this.write(this.style(this.style(content + "\r\n", "yellow"), "bold"));
     }
 
@@ -71,9 +80,12 @@ class Text {
      * @param {String} content
      */
     log (content) {
-        if (!this._verbose) return;
+        if (!this._verbose) {
+            return;
+        }
+        
         this.write(content + "\r\n");
     }
-};
+}
 
 module.exports = Text;

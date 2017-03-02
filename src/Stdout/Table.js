@@ -3,12 +3,12 @@
 class Table {
     /**
      * Display a table
-     * @param  {Array}
-     * @param  {Array}
+     * @param  {Array} headers
+     * @param  {Array} rows
      * @param  {Boolean}
      */
     constructor (headers, rows) {
-        if (void(0) === headers || void(0) === rows) {
+        if (undefined === headers || undefined === rows) {
             throw new Error("Headers or rows can't be empty");
         }
 
@@ -33,7 +33,7 @@ class Table {
             for(j = 0 ; j < this._rowLength; j++) {
                 str = this._rows[j][i].toString().length;
 
-                if (void(0) === this._colsWidth[i]) {
+                if (undefined === this._colsWidth[i]) {
                     this._colsWidth[i] = str;
                     continue;
                 }

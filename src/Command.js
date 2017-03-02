@@ -45,11 +45,11 @@ class Command extends Text {
      * @param  {Array} args
      */
     runCommand (args) {
-        if (typeof this.getAction() === 'function') {
-            return this.getAction().apply(this, args);
+        if (typeof this.getAction() !== 'function') {
+            throw new Error('The command ' + this.getName() + ' doesn\'t have a valid function callback.');
         }
 
-        this.error('The command ' + this.getName() + ' doesn\'t have a valid function callback.');
+        this.getAction().apply(this, args);
     }
 
     /**

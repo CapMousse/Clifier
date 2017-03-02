@@ -50,7 +50,9 @@ class Cli extends Text {
      * @return {Command}
      */
     command (name, description) {
-        if (name == "help") throw new Error("help is a reserved command");
+        if (name === "help") {
+            throw new Error("help is a reserved command");
+        }
 
         let command = new Command(name, description);
         this._commands[command.getName()] = command;
@@ -64,7 +66,7 @@ class Cli extends Text {
      * @return {Command}
      */
     findCommand (name) {
-        if (void(0) !== this._commands[name]) {
+        if (undefined !== this._commands[name]) {
             return this._commands[name];
         }
 
@@ -90,7 +92,7 @@ class Cli extends Text {
             arg = args[i];
 
             if (/^[\-]{1,2}(.*)$/.test(arg)){
-                if (void(0) !== option) {
+                if (undefined !== option) {
                     options.push([option]);             
                 }
 
@@ -98,9 +100,9 @@ class Cli extends Text {
                 continue;
             } 
 
-            if (void(0) !== option && void(0) !== arg) {
+            if (undefined !== option && undefined !== arg) {
                 options.push([option, arg]);
-                option = void(0);
+                option = undefined;
             }
         }
 
@@ -116,8 +118,8 @@ class Cli extends Text {
 
     /**
      * Order option by alphabetical order
-     * @param  {Array}
-     * @param  {Object}
+     * @param  {Command} command
+     * @param  {Array}   options
      * @return {Array}
      */
     orderOptions (command, options) {
@@ -132,8 +134,10 @@ class Cli extends Text {
 
         return ordered;
     }
+
     /**
      * Launch Cli
+     * @return {void}
      */
     run () {
         let helpCmd = new Command("help", "Show help");
@@ -199,9 +203,9 @@ class Cli extends Text {
 
     /**
      * Display or create a table
-     * @param  {Array}
-     * @param  {Array}
-     * @param  {Boolean}
+     * @param  {Array}  header
+     * @param  {Array}  rows
+     * @return {Cli} 
      */
     table (headers, rows) {
         var table = new Table(headers, rows);
@@ -212,9 +216,10 @@ class Cli extends Text {
 
     /**
      * Create a new progress bar
-     * @param {String}
-     * @param {Number}
-     * @param {Boolean}
+     * @param {String}  name
+     * @param {Number}  total
+     * @param {Boolean} displayTimer
+     * @return {Progress}
      */
     progress (name, total, displayTimer) {
         return new Progress(name, total, displayTimer, this._quiet);
@@ -223,13 +228,22 @@ class Cli extends Text {
     /**
      * Enable the verbose mode
      * @param {Array} args
+     * @return {Array}
      */
     checkVerbose (args) {
-        if (args.indexOf('-v') == -1 && args.indexOf('--verbose') == -1) return args;
+        if (args.indexOf('-v') === -1 && args.indexOf('--verbose') == -1) {
+            return args;
+        } 
 
         this._verbose = true;
-        if (args.indexOf('-v') != -1) args.splice(args.indexOf('-v'), 1);
-        if (args.indexOf('--verbose') != -1) args.splice(args.indexOf('--verbose'), 1);
+
+        if (args.indexOf('-v') !== -1) {
+            args.splice(args.indexOf('-v'), 1);
+        }
+
+        if (args.indexOf('--verbose') !== -1) {
+            args.splice(args.indexOf('--verbose'), 1);
+        }
         
         return args;
     }
@@ -237,9 +251,12 @@ class Cli extends Text {
     /**
      * Enable the quiet mode
      * @param {Array} args
+     * @return {Array}
      */
     checkQuiet (args) {
-        if (args.indexOf('--quiet') === -1) return args;
+        if (args.indexOf('--quiet') === -1) {
+            return args;
+        }
 
         this._quiet = true;
         args.splice(args.indexOf('--quiet'), 1);
