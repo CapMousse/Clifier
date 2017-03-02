@@ -1,81 +1,88 @@
 'use strict';
 
-var Argument = require("./Argument.js");
+const Argument = require("./Argument.js");
+const Text = require("./Stdout/Text.js");
 
-/**
- * Create a new command
- * @param {String}   command name
- * @param {String}   command descrption
- * @param {Function} command callback
- */
-function Command(name, description, callback) {
-    this._name = name;
-    this._description = description;
-    this._callback = callback;
-    this._arguments = [];
-
-    return this;
-}
-
-/**
- * @param  {String}   name
- * @param  {String}   description
- * @param  {String}   defaultValue
- * @param  {Function} callback
- * @return {Command}
- */
-Command.prototype.addArgument = function (name, description, defaultValue, callback) {
-    if ("object" === name && void(0) !== name.constructor && "Argument" === name.constructor.name){
-        this._arguments.push(argument);
-    } else {
-        this._arguments.push(new Argument(name, description, defaultValue, callback));    
+class Command extends Text {
+    /**
+     * Create a new command
+     * @param {String}      name        command name
+     * @param {String}      description descrption
+     * @param {null|Action} action      command action
+     */
+    constructor (name, description, action) {
+        super();
+        this._name = name;
+        this._description = description;
+        this._action = action || null;
+        this._arguments = [];
     }
 
-    return this;
-};
-
-/**
- * Launche the command
- * @param  {Array} args
- */
-Command.prototype.runCommand = function (args) {
-    if (typeof this.getCallback() === 'function') {
-        return this.getCallback().apply(this, args);
+    /**
+     * @param  {String}   name
+     * @param  {String}   description
+     * @param  {String}   defaultValue
+     * @param  {Function} filter
+     * @return {Command}
+     */
+    argument (name, description, defaultValue, filter) {
+        this._arguments.push(new Argument(name, description, defaultValue, filter));
+        return this;
     }
 
-    helpers.log.write('The command ' + this.getName() + ' doesn\'t have a valid function callback.');
-};
+    /**
+     * Set command action
+     * @param {Function} callback
+     * @return {Command}
+     */
+    action (callback) {
+        this._action = callback;
+        return this;
+    }
 
-/**
- * Get arguments list
- * @return {Array}
- */
-Command.prototype.getArguments = function () { 
-    return this._arguments;
-};
+    /**
+     * Launche the command
+     * @param  {Array} args
+     */
+    runCommand (args) {
+        if (typeof this.getAction() !== 'function') {
+            throw new Error('The command ' + this.getName() + ' doesn\'t have a valid function callback.');
+        }
 
-/**
- * Get command name
- * @return {String}
- */
-Command.prototype.getName = function () { 
-    return this._name;
-};
+        this.getAction().apply(this, args);
+    }
 
-/**
- * Get command description
- * @return {Srting}
- */
-Command.prototype.getDescription = function () { 
-    return this._description || false;
-};
+    /**
+     * Get arguments list
+     * @return {Array}
+     */
+    getArguments () { 
+        return this._arguments;
+    }
 
-/**
- * Get command callback
- * @return {Function}
- */
-Command.prototype.getCallback = function () { 
-    return this._callback;
+    /**
+     * Get command name
+     * @return {String}
+     */
+    getName () { 
+        return this._name;
+    }
+
+    /**
+     * Get command description
+     * @return {Srting}
+     */
+    getDescription () { 
+        return this._description || false;
+    }
+
+    /**
+     * Get command callback
+     * @return {Function}
+     */
+    getAction () { 
+        return this._action;
+    }
 }
 
 module.exports = Command;

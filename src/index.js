@@ -2,7 +2,7 @@
 
 /**
  * Repeat a string
- * @param  {Number}
+ * @param  {Number} count
  * @return {String}
  */
 String.prototype.repeat = function (count) {
@@ -26,14 +26,7 @@ String.prototype.repeat = function (count) {
 /**
  * Expose Clifier.
  */
+const Clifier = require('./Cli.js');
+const cli = new Clifier();
 
-module.exports = {
-    'Cli':      require('./Cli.js'),
-    'Command':  require('./Command.js'),
-    'Argument': require('./Argument.js'),
-    'Stdout':   {
-        'Text':     require('./Stdout/Text.js'),
-        'Progress': require('./Stdout/Progress.js'),
-        'Table':    require('./Stdout/Table.js'),
-    }
-};
+module.exports = cli;
