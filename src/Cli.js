@@ -92,7 +92,7 @@ class Cli extends Text {
             arg = args[i];
 
             if (/^[\-]{1,2}(.*)$/.test(arg)){
-                if (undefined !== option) {
+                if (option !== undefined) {
                     options.push([option]);             
                 }
 
@@ -203,7 +203,7 @@ class Cli extends Text {
 
     /**
      * Display or create a table
-     * @param  {Array}  header
+     * @param  {Array}  headers
      * @param  {Array}  rows
      * @return {Cli} 
      */
