@@ -26,12 +26,7 @@ class Command extends Text {
      * @return {Command}
      */
     argument (name, description, defaultValue, filter) {
-        if ("object" === name && void(0) !== name.constructor && "Argument" === name.constructor.name){
-            this._arguments.push(argument);
-        } else {
-            this._arguments.push(new Argument(name, description, defaultValue, filter));    
-        }
-
+        this._arguments.push(new Argument(name, description, defaultValue, filter));
         return this;
     }
 
