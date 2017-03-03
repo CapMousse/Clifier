@@ -38,22 +38,20 @@ class Argument {
      * @return {mixed}
      */
     parse (options) {
-        var len = options.length,
-            arg = this.getName().split(','),
-            i = 0,
-            name,
-            value;
+        let arg = new RegExp('(^'+this.getName().split(',').join('|^')+')$', 'ig');
+        let name;
+        let value;
 
-        for (; i < len; i++) {
-            name = options[i][0];
-            value = options[i][1] || undefined;
+        for (let option of options) {
+            name    = option[0];
+            value   = option[1] || undefined;
 
-            if (arg.indexOf(name) === -1) {
+            if (!arg.test(name)) {
                 value = undefined;
                 continue;
             }
 
-            if (undefined === value && null !== this.getDefaultValue()) {
+            if (undefined === value) {
                 value = this.getDefaultValue();
             }
 
@@ -68,10 +66,9 @@ class Argument {
             value = this.getFilter().call(this, value);
         }
 
-        if (undefined === value && null !== this.getDefaultValue()) {
+        if (undefined === value) {
             value = this.getDefaultValue();
         }
-
 
         return value;
     }
@@ -106,6 +103,17 @@ class Argument {
      */
     getFilter () { 
         return this._filter;
+    }
+
+    /**
+     * Check if an argument il valid
+     * @param {string} argument 
+     */
+    test (argument) {
+        let elems      = this.getName().split(',');
+        let validation = new RegExp('(^'+elems.join('|^')+')$', 'ig');
+
+        return validation.test(argument);
     }
 }
 

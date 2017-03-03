@@ -2,7 +2,7 @@
 
 Create cli utility for node.js easily, including:
  - Full command/argument parser
- - Consistant arguments 
+ - Consistant inputs and arguments 
  - Auto help generator
  - Progress and table generators
 
@@ -19,12 +19,14 @@ cli
 
 cli
     .command('testcommand', 'description')
+    .input('name', '[a-z]+')
     .argument('-a1, --arg1', 'foo', 'defaultValue', function(value){
         return "filtered value: " + value;
     })
     .argument('-a2, --arg2', 'bar')
-    .action((arg1, arg2) => {
-        cli.success(arg1);
+    .action((name, arg1, arg2) => {
+        cli.log(arg1);
+        cli.success('Hello '+name);
         cli.warning("What is that?");
         cli.error(arg2);
 
@@ -100,6 +102,12 @@ Create a new command with name and description.
 
 ### Command API
 
+#### `.input(name, validator) : Command`
+
+Add an input to the command.
+- **name** (string) : name of the input
+- **validator** (string) : RegExp to validate the input
+
 #### `.argument(name, description, defaultValue, filter) : Command`
 
 Add an argument to the command.
@@ -108,9 +116,9 @@ Add an argument to the command.
 - **defaultValue** (mixed) : default value of the argument if empty
 - **filter** (function) : filter function for the argument
 
-#### `.action(function) : Command`
+#### `.action(function(...inputs, ...arguments)) : Command`
 
-Action of the command when executed. Function will receive all arguments in orders as parameters.
+Action of the command when executed. Function will receive all inputs and arguments in define orders as parameters.
 
 ## License
 

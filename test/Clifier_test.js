@@ -110,7 +110,7 @@ exports.testArguments = function(test) {
 };
 
 exports.testRun = function(test) {
-  test.expect(5);
+  test.expect(6);
 
   var oldExit = process.exit;
   var log = [];
@@ -121,20 +121,23 @@ exports.testRun = function(test) {
 
   
   cli.run("help");
-  test.equal(log[0], '\ntest v0.0.1\ntest command\n\n\u001b[1mUSAGE : \u001b[22m\n\n test\u001b[33m [command]\u001b[39m\u001b[34m [options]\u001b[39m\n\n\u001b[1mCOMMANDS :\u001b[22m \n\n \u001b[33mtrycommand\u001b[39m \u001b[34m-t\u001b[39m \u001b[34m-j\u001b[39m\tdescription\n  \u001b[34m-t\u001b[39m            \ttest argument\n  \u001b[34m-j\u001b[39m            \tvar argument\n \u001b[33mtestSimpleTable\u001b[39m \ttry table display\n \u001b[33mtest\u001b[39m            \tfalse\n \u001b[33mhelp\u001b[39m            \tShow help\n\n\u001b[1mOPTIONS :\u001b[22m \n\n \u001b[32m--quiet\u001b[39m        \tQuiet node\n \u001b[32m-v, --verbose\u001b[39m  \tVerbose node\n\n');
+  test.equal(log[0], '\ntest v0.0.1\ntest command\n\n\u001b[1mUSAGE : \u001b[22m\n\n test\u001b[33m [command]\u001b[39m\u001b[34m [options]\u001b[39m\n\n\u001b[1mCOMMANDS :\u001b[22m \n\n \u001b[33mtrycommand\u001b[39m \u001b[34m-t\u001b[39m \u001b[34m-j\u001b[39m\tdescription\n \u001b[33mtestSimpleTable\u001b[39m \ttry table display\n \u001b[33mtest\u001b[39m            \tfalse\n \u001b[33mhelp\u001b[39m \u001b[31m<command>\u001b[39m  \tShow help\n\n\u001b[1mOPTIONS :\u001b[22m \n\n \u001b[32m--quiet\u001b[39m        \tQuiet node\n \u001b[32m-v, --verbose\u001b[39m  \tVerbose node\n\n');
+
+  cli.run("help", "trycommand");
+  test.equal(log[1], '\ntest v0.0.1\ntest command\n\n\u001b[1mCOMMAND USAGE : \u001b[22m\n\n \u001b[33mtrycommand\u001b[39m \u001b[34m-t\u001b[39m \u001b[34m-j\u001b[39m\tdescription\n\n\u001b[1mARGUMENTS : \u001b[22m\n\n\u001b[34m-t, --test\u001b[39m      \tundefined\n\u001b[34m-j, --jar\u001b[39m       \tundefined\n\n');
 
   cli.run("undefined");
-  test.equal(log[1], 'The command undefined doesn\'t exists. Try help to get the list of available commands');
+  test.equal(log[2], 'The command undefined doesn\'t exists. Try help to get the list of available commands');
 
   cli.run("trycommand");
-  test.equal(log[2], 'data : undefined, undefined');
+  test.equal(log[3], 'data : undefined, null');
 
   cli.run("trycommand",  "-j",  "test");
-  test.equal(log[3], 'data : undefined, true');
+  test.equal(log[4], 'data : undefined, true');
 
   var random = Math.random().toString(16).substring(2);
   cli.run("trycommand",  "-j",  "test", "-t", random);
-  test.equal(log[4], 'data : ' + random + ', true');
+  test.equal(log[5], 'data : ' + random + ', true');
 
   process.exit = oldExit;
   test.done();
