@@ -38,10 +38,9 @@ class Argument {
      * @return {mixed}
      */
     parse (options) {
-        var len = options.length,
-            arg = new RegExp('(^'+this.getName().split(',').join('|^')+')$', 'ig'),
-            name,
-            value;
+        let arg = new RegExp('(^'+this.getName().split(',').join('|^')+')$', 'ig');
+        let name;
+        let value;
 
         for (let option of options) {
             name    = option[0];

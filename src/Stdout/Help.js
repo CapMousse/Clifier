@@ -91,7 +91,6 @@ class Help extends Text {
             let length  = 0;
             let inputs  = command.getInputs();
             let args    = command.getArguments();
-            let argDoc  = [];
 
             length += command.getName().length;
             txt += " " + this.style(command.getName(), "yellow");
@@ -99,7 +98,7 @@ class Help extends Text {
             inputs.forEach((input) => {
                 let name = "<" + input.getName() + ">";
                 length += name.length + 1;
-                txt += " " + this.style(name, "red")
+                txt += " " + this.style(name, "red");
             })
 
             args.forEach((arg) => {
@@ -138,7 +137,7 @@ class Help extends Text {
 
         args.forEach((arg) => {
             let name = arg.getName();
-            this._output += this.style(name, "blue") + ' '.repeat(this._length-name.length) + '\t' + arg.getDecription + "\n"
+            this._output += this.style(name, "blue") + ' '.repeat(this._length-name.length) + '\t' + arg.getDecription + "\n";
         });
 
         this._output += "\n";
@@ -159,7 +158,9 @@ class Help extends Text {
      * Get help output
      */
     getHelp (command) {
-        if (command) return this.getCommandHelp(command);
+        if (command) {
+            return this.getCommandHelp(command);
+        }
 
         this.setIntro();
         this.setCommands();

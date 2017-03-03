@@ -54,7 +54,7 @@ class Cli extends Text {
             throw new Error("help is a reserved command");
         }
 
-        let command = new Command(name, description);
+        const command = new Command(name, description);
         this._commands[command.getName()] = command;
 
         return command;
@@ -81,14 +81,17 @@ class Cli extends Text {
      * @return {Object}
      */
     parseCommand (command, args) {
-        let allowedArgs = command.getArguments();
+        const allowedArgs = command.getArguments();
+
         let parsedArgs = [];
         let other = [];
         let option;
 
         for (let arg of args) {
             for (let allowedArg of allowedArgs) {
-                if (!allowedArg.test(arg)) continue;
+                if (!allowedArg.test(arg)) {
+                    continue;
+                }
 
                 if (option !== undefined) {
                     parsedArgs.push([option]);             
@@ -126,7 +129,7 @@ class Cli extends Text {
      * @return {Array}
      */
     orderArguments (command, options) {
-        var ordered = [];
+        let ordered = [];
 
         for (let arg of command.getArguments()) {
             ordered.push(arg.parse(options));
@@ -142,13 +145,15 @@ class Cli extends Text {
      * @return {Array}
      */
     orderInputs (command, options) {
-        var ordered = [];
+        let ordered = [];
 
         for (let input of command.getInputs()) {
             let done = false;
 
             for (let option of options) {
-                if (!input.test(option)) continue;
+                if (!input.test(option)) {
+                    continue;
+                } 
 
                 ordered.push(option);
                 options.splice(options.indexOf(option));
@@ -169,11 +174,9 @@ class Cli extends Text {
      * @return {void}
      */
     run () {
-        let helpCmd = new Command("help", "Show help");
+        const helpCmd = new Command("help", "Show help");
+
         helpCmd.input('command', "[a-zA-Z]+");
-
-        this._commands[helpCmd.getName()] = helpCmd;
-
         helpCmd.action((command) => {
             let help = new Help(this);
             
@@ -181,7 +184,9 @@ class Cli extends Text {
             this.end();
         });
 
-        var args = Object.keys(arguments).length ? Array.prototype.slice.call(arguments) : process.argv.slice(2);
+        this._commands[helpCmd.getName()] = helpCmd;
+
+        let args = Object.keys(arguments).length ? Array.prototype.slice.call(arguments) : process.argv.slice(2);
         
         args = this.checkVerbose(args);
         args = this.checkQuiet(args);
@@ -191,7 +196,11 @@ class Cli extends Text {
         }
 
         let command = this.findCommand(args.shift());
-        if (!command) return this.end();
+
+        if (!command) { 
+            this.end();
+            return;
+        }
 
         let parsedArgs = this.parseCommand(command, args);
         let orderArgs = this.orderArguments(command, parsedArgs.arguments);
