@@ -13,10 +13,6 @@ class Help extends Text {
         this._cli = cli;
         this._output = "\n";
         this._length = 0;
-
-        this.setIntro();
-        this.setCommands();
-        this.setOptions();
     }
  
     /**
@@ -38,40 +34,85 @@ class Help extends Text {
         this._output += this.style(" [command]", "yellow");
         this._output += this.style(" [options]", "blue");
     }
+ 
+    /**
+     * Get help intro
+     */
+    setCommandIntro (command) {
+        const inputs = command.getInputs();
+        const args = command.getArguments();
+
+        let txt = "";
+        let length = 0;
+            
+        this._output += this._cli.getName();
+
+        if (this._cli.getVersion()) {
+            this._output += ' v' + this._cli.getVersion();
+        }
+
+        if (this._cli.getDescription()) {
+            this._output += "\n" + this._cli.getDescription();
+        }
+
+        this._output += "\n\n" + this.style("COMMAND USAGE : ", "bold")  + "\n\n";
+
+        length += command.getName().length;
+        txt += " " + this.style(command.getName(), "yellow");
+
+        inputs.forEach((input) => {
+            let name = "<" + input.getName() + ">";
+            length += name.length + 1;
+            txt += " " + this.style(name, "red")
+        });
+
+        args.forEach((arg) => {
+            let name = arg.getName().split(',')[0];
+            length += name.length + 1;
+            txt += " "+ this.style(name, "blue");
+        });
+
+        this._length = length;
+        this._output += txt + ' '.repeat(this._length-length) + '\t' + command.getDescription() + "\n";
+
+    }
 
     /**
      * Get command preformated
      */
     getCommands () {
-        var parsedCommands = [],
-            commands = this._cli.getCommands();
+        const commands = this._cli.getCommands();
+
+        let parsedCommands  = [];
 
         Object.keys(commands).forEach((name) => {
-            var command = commands[name],
-                txt = "",
-                length = 0,
-                args = command.getArguments(),
-                argDoc = [];
+            let command = commands[name];
+            let txt     = "";
+            let length  = 0;
+            let inputs  = command.getInputs();
+            let args    = command.getArguments();
+            let argDoc  = [];
 
             length += command.getName().length;
             txt += " " + this.style(command.getName(), "yellow");
+
+            inputs.forEach((input) => {
+                let name = "<" + input.getName() + ">";
+                length += name.length + 1;
+                txt += " " + this.style(name, "red")
+            })
 
             args.forEach((arg) => {
                 let name = arg.getName().split(',')[0];
                 length += name.length + 1;
                 txt += " "+ this.style(name, "blue");
-                argDoc.push([
-                    "  "+ this.style(name, "blue"),
-                    arg.getDescription(),
-                    name.length + 2
-                ]);
             });
 
             if (length > this._length) {
                 this._length = length;
             }
             
-            parsedCommands.push([txt, command.getDescription(), length, argDoc]);
+            parsedCommands.push([txt, command.getDescription(), length]);
         });
 
         return parsedCommands;
@@ -81,17 +122,26 @@ class Help extends Text {
      * Get command list
      */
     setCommands () {
-        var commands = this.getCommands();
+        const commands = this.getCommands();
 
         this._output += "\n\n" + this.style("COMMANDS :", "bold") + " \n\n";
 
         commands.forEach((command) => {
             this._output += command[0] + ' '.repeat(this._length-command[2]) + '\t' + command[1] + "\n";
-
-            command[3].forEach((arg) => {
-                this._output += arg[0] + ' '.repeat(this._length-arg[2]) + '\t' + arg[1] + "\n";
-            });
         });
+    }
+
+    setCommand (command) {
+        const args = command.getArguments();
+
+        this._output += "\n" + this.style("ARGUMENTS : ", "bold")  + "\n\n";
+
+        args.forEach((arg) => {
+            let name = arg.getName();
+            this._output += this.style(name, "blue") + ' '.repeat(this._length-name.length) + '\t' + arg.getDecription + "\n"
+        });
+
+        this._output += "\n";
     }
 
     /**
@@ -108,7 +158,27 @@ class Help extends Text {
     /**
      * Get help output
      */
-    getHelp () {
+    getHelp (command) {
+        if (command) return this.getCommandHelp(command);
+
+        this.setIntro();
+        this.setCommands();
+        this.setOptions();
+
+        return this._output;
+    }
+
+    getCommandHelp (command) {
+        const commands = this._cli.getCommands();
+
+        if (!commands[command]) {
+            this._cli.error("Command " + command + " don't exists");
+            return "";
+        }
+
+        this.setCommandIntro(commands[command]);
+        this.setCommand(commands[command]);
+
         return this._output;
     }
 }

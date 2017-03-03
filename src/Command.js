@@ -1,6 +1,7 @@
 'use strict';
 
 const Argument = require("./Argument.js");
+const Input = require("./Input.js");
 const Text = require("./Stdout/Text.js");
 
 class Command extends Text {
@@ -16,6 +17,7 @@ class Command extends Text {
         this._description = description;
         this._action = action || null;
         this._arguments = [];
+        this._inputs = [];
     }
 
     /**
@@ -27,6 +29,16 @@ class Command extends Text {
      */
     argument (name, description, defaultValue, filter) {
         this._arguments.push(new Argument(name, description, defaultValue, filter));
+        return this;
+    }
+
+    /**
+     * @param  {String}   name
+     * @param  {String}   validator
+     * @return {Command}
+     */
+    input (name, validator) {
+        this._inputs.push(new Input(name, validator));
         return this;
     }
 
@@ -44,12 +56,12 @@ class Command extends Text {
      * Launche the command
      * @param  {Array} args
      */
-    runCommand (args) {
+    runCommand (inputs, args) {
         if (typeof this.getAction() !== 'function') {
             throw new Error('The command ' + this.getName() + ' doesn\'t have a valid function callback.');
         }
-
-        this.getAction().apply(this, args);
+        
+        this.getAction()(...inputs, ...args);
     }
 
     /**
@@ -58,6 +70,14 @@ class Command extends Text {
      */
     getArguments () { 
         return this._arguments;
+    }
+
+    /**
+     * Get arguments list
+     * @return {Array}
+     */
+    getInputs () { 
+        return this._inputs;
     }
 
     /**

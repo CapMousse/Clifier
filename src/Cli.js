@@ -80,56 +80,85 @@ class Cli extends Text {
      * @param  {String} args
      * @return {Object}
      */
-    parseCommand (args) {
-        var command = args.shift(),
-            options = [],
-            len = args.length,
-            i = 0,
-            arg,
-            option;
+    parseCommand (command, args) {
+        let allowedArgs = command.getArguments();
+        let parsedArgs = [];
+        let other = [];
+        let option;
 
-        for (; i < len; i++) {
-            arg = args[i];
+        for (let arg of args) {
+            for (let allowedArg of allowedArgs) {
+                if (!allowedArg.test(arg)) continue;
 
-            if (/^[\-]{1,2}(.*)$/.test(arg)){
                 if (option !== undefined) {
-                    options.push([option]);             
+                    parsedArgs.push([option]);             
                 }
 
                 option = arg;
-                continue;
-            } 
+                arg = undefined;
+            }
 
-            if (undefined !== option && undefined !== arg) {
-                options.push([option, arg]);
+            if (option !== undefined && arg) {
+                parsedArgs.push([option, arg]);
                 option = undefined;
+                continue;
+            }
+
+            if (arg) {
+                other.push(arg);
             }
         }
 
         if (option) {
-            options.push([option]);
+            parsedArgs.push([option]);
         }
 
         return {
-            command: this.findCommand(command), 
-            options: options
+            arguments   : parsedArgs,
+            other       : other
         };
     }
 
     /**
-     * Order option by alphabetical order
+     * Order option by creation order
      * @param  {Command} command
      * @param  {Array}   options
      * @return {Array}
      */
-    orderOptions (command, options) {
-        var ordered = [],
-            args = command ? command.getArguments() : [],
-            len = args.length,
-            i = 0;
+    orderArguments (command, options) {
+        var ordered = [];
 
-        for (; i < len; i++) {
-            ordered.push(args[i].parse(options));
+        for (let arg of command.getArguments()) {
+            ordered.push(arg.parse(options));
+        }
+
+        return ordered;
+    }
+
+    /**
+     * Order option by creation order
+     * @param  {Command} command
+     * @param  {Array}   options
+     * @return {Array}
+     */
+    orderInputs (command, options) {
+        var ordered = [];
+
+        for (let input of command.getInputs()) {
+            let done = false;
+
+            for (let option of options) {
+                if (!input.test(option)) continue;
+
+                ordered.push(option);
+                options.splice(options.indexOf(option));
+                done = true;
+                break;
+            }
+
+            if (!done) {
+                ordered.push(undefined);
+            }
         }
 
         return ordered;
@@ -141,13 +170,14 @@ class Cli extends Text {
      */
     run () {
         let helpCmd = new Command("help", "Show help");
+        helpCmd.input('command', "[a-zA-Z]+");
 
         this._commands[helpCmd.getName()] = helpCmd;
 
-        helpCmd.action(_ => {
+        helpCmd.action((command) => {
             let help = new Help(this);
             
-            this.write(help.getHelp());
+            this.write(help.getHelp(command));
             this.end();
         });
 
@@ -160,10 +190,14 @@ class Cli extends Text {
             args.push('help');
         }
 
-        var parsed = this.parseCommand(args);
-        var parsedArgs = this.orderOptions(parsed.command, parsed.options);
+        let command = this.findCommand(args.shift());
+        if (!command) return this.end();
 
-        parsed.command ? parsed.command.runCommand(parsedArgs) : this.end();
+        let parsedArgs = this.parseCommand(command, args);
+        let orderArgs = this.orderArguments(command, parsedArgs.arguments);
+        let orderInputs = this.orderInputs(command, parsedArgs.other);
+
+        command.runCommand(orderInputs, orderArgs);
     }
 
     /**
