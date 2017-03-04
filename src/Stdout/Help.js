@@ -137,7 +137,7 @@ class Help extends Text {
 
         args.forEach((arg) => {
             let name = arg.getName();
-            this._output += this.style(name, "blue") + ' '.repeat(this._length-name.length) + '\t' + arg.getDecription + "\n";
+            this._output += this.style(name, "blue") + ' '.repeat(this._length-name.length) + '\t' + arg.getDescription() + "\n";
         });
 
         this._output += "\n";
@@ -148,8 +148,8 @@ class Help extends Text {
      */
     setOptions () {
         this._output += "\n" + this.style("OPTIONS :", "bold") + " \n\n";
-        this._output += " " + this.style("--quiet", "green") + ' '.repeat(this._length - 8) + "\tQuiet node\n";
-        this._output += " " + this.style("-v, --verbose", "green") + ' '.repeat(this._length - 14) + "\tVerbose node\n";
+        this._output += " " + this.style("--quiet", "green") + ' '.repeat(this._length - 8) + "\tQuiet mode\n";
+        this._output += " " + this.style("-v, --verbose", "green") + ' '.repeat(this._length - 14) + "\tVerbose mode\n";
 
         this._output += "\n";
     }
